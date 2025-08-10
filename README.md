@@ -18,6 +18,7 @@ create conda env
     ```
 
 ## Single-node 2GPU benchmark w/o NVLink
+1. computing `~/.cache/vllm/gpu_p2p_access_cache_for_1,2.json` causes process to hang on h200 nodes (haven't debugged why), but works on a100 node, so just copy from a100 node...
 1. start vllm server - leave running
     1. variant with no tensor parallel, pipeline parallel 2
     1. variant with tensor parallel 2, no pipeline parallel
