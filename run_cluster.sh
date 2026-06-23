@@ -78,9 +78,12 @@ trap cleanup EXIT
 # while workers connect to the head's address.
 RAY_START_CMD="ray start --block"
 if [ "${NODE_TYPE}" == "--head" ]; then
-    RAY_START_CMD+=" --head --port=6379"
+    RAY_START_CMD+=" --head --node-ip-address=${HEAD_NODE_ADDRESS} --port=6379"
 else
     RAY_START_CMD+=" --address=${HEAD_NODE_ADDRESS}:6379"
+    if [ -n "${VLLM_HOST_IP}" ]; then
+        RAY_START_CMD+=" --node-ip-address=${VLLM_HOST_IP}"
+    fi
 fi
 
 # Launch the container with the assembled parameters.
