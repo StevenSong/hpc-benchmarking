@@ -40,6 +40,7 @@ For testing the new ConnectX 7 on the new `nvl03/4` nodes:
     # now inside container
     ray status # should have 2 active nodes
     vllm serve /models/meta-llama/Llama-3.1-8B-Instruct -tp 8 # tensor-parallel 8 is most demanding of fast interconnect
+    # THE NCCL TRACE MIGHT BE INTERESTING, I DIDNT QUITE UNDERSTAND IT
     ```
 * run the following on `nvl03` to run the benchmark (this starts yet another shell in the head node container and runs the benchmark):
     ```
