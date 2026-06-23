@@ -22,7 +22,8 @@ For testing the new ConnectX 7 on the new `nvl03/4` nodes:
     ```
     bash run_cluster.sh vllm/vllm-openai:v0.10.0 \
     10.32.15.23 \
-    --worker /opt/gpudata/models \
+    --worker \
+    /opt/gpudata/models \
     -e VLLM_HOST_IP=10.32.15.24 \
     -e GLOO_SOCKET_IFNAME=ens4013np0 \
     --ulimit nofile=1048576:1048576 \
