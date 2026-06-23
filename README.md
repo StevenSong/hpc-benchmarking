@@ -47,7 +47,7 @@ For testing the new ConnectX 7 on the new `nvl03/4` nodes:
     # now inside container
     vllm bench serve --backend openai --dataset-name random --model /models/meta-llama/Llama-3.1-8B-Instruct --seed 42
     ```
-* the primary metric we want to compare is median TPOT: time per output token. I've copied below the current results of running the above; **NOTE, these results do not seem to reflect proper usage of the ConnectX7 card**:
+* the primary metric we want to compare is median TPOT: time per output token. I've copied below the current results of running the above; **NOTE: these results do not seem to reflect proper usage of the ConnectX7 card**:
     ```
     ============ Serving Benchmark Result ============
     Successful requests:                     1000
