@@ -39,15 +39,38 @@ For testing the new ConnectX 7 on the new `nvl03/4` nodes:
     docker exec -it $(docker ps --format '{{.Names}}' | head -1) /bin/bash
     # now inside container
     ray status # should have 2 active nodes
-    vllm serve /models/meta-llama/<MODEL> -tp 8 # tensor-parallel 8 is most demanding of fast interconnect
+    vllm serve /models/meta-llama/Llama-3.1-8B-Instruct -tp 8 # tensor-parallel 8 is most demanding of fast interconnect
     ```
 * run the following on `nvl03` to run the benchmark (this starts yet another shell in the head node container and runs the benchmark):
     ```
     docker exec -it $(docker ps --format '{{.Names}}' | head -1) /bin/bash
     # now inside container
-    vllm bench serve --backend openai --dataset-name random --model /models/meta-llama/<MODEL> --seed 42
+    vllm bench serve --backend openai --dataset-name random --model /models/meta-llama/Llama-3.1-8B-Instruct --seed 42
     ```
-* the primary metric we want to compare is median TPOT: time per output token
+* the primary metric we want to compare is median TPOT: time per output token. I've copied below the current results of running the above; **NOTE, these results do not seem to reflect proper usage of the ConnectX7 card**:
+    ```
+    ============ Serving Benchmark Result ============
+    Successful requests:                     1000
+    Benchmark duration (s):                  476.87
+    Total input tokens:                      1021977
+    Total generated tokens:                  122419
+    Request throughput (req/s):              2.10
+    Output token throughput (tok/s):         256.71
+    Total Token throughput (tok/s):          2399.79
+    ---------------Time to First Token----------------
+    Mean TTFT (ms):                          213969.93
+    Median TTFT (ms):                        211585.74
+    P99 TTFT (ms):                           429554.37
+    -----Time per Output Token (excl. 1st token)------
+    Mean TPOT (ms):                          1969.50
+    Median TPOT (ms):                        2033.20
+    P99 TPOT (ms):                           3260.55
+    ---------------Inter-token Latency----------------
+    Mean ITL (ms):                           1921.21
+    Median ITL (ms):                         3094.62
+    P99 ITL (ms):                            4164.73
+    ==================================================
+    ```
 
 # HPC GPU benchmarking
 
