@@ -68,10 +68,10 @@ create conda env
     -e GLOO_SOCKET_IFNAME=ens80f0np0
     ```
 1. connect to docker container on head node and start vllm server - leave running
-    1. variant with no tensor parallel, pipeline parallel 8 (baseline?)
+    1. variant with no tensor parallel, pipeline parallel 8 (baseline?) (since not using tensor parallel, just omit the `-tp` flag)
     1. variant with tensor parallel 2, pipeline parallel 4 (use 2-way nvlinks)
     1. variant with tensor parallel 4, pipeline parallel 2 (intrAnode tensor parallel)
-    1. variant with tensor parallel 8, no pipeline parallel (intErnode tensor parallel)
+    1. variant with tensor parallel 8, no pipeline parallel (intErnode tensor parallel) (since not using pipeline parallel, just omit the `-pp` flag)
     ```bash
     vllm serve /models/meta-llama/Meta-Llama-3.1-405B-Instruct-FP8 -tp X -pp Y
     ```
