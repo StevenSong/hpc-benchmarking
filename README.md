@@ -1,3 +1,53 @@
+# 2026-06-23 UPDATE
+
+For testing the new ConnectX 7 on the new `nvl03/4` nodes:
+* git clone this repo to both nodes
+* run the following on `nvl03` to set it up as the head node (this starts a docker container, leave this running):
+    ```
+    bash run_cluster.sh vllm/vllm-openai:v0.10.0 \
+    10.32.15.23 \
+    --head \
+    /opt/gpudata/models \
+    -e VLLM_HOST_IP=10.32.15.23 \
+    -e GLOO_SOCKET_IFNAME=ens4013np0 \
+    --ulimit nofile=1048576:1048576 \
+    --privileged \
+    -e NCCL_IB_HCA=mlx5 \
+    -v /dev/shm:/dev/shm \
+    -e NCCL_DEBUG=INFO \
+    -e NCCL_SOCKET_IFNAME=ens4013np0 \
+    -e NCCL_IB_GID_INDEX=3
+    ```
+* run the following on `nvl04` to set it up as a worker node (this starts a docker container, leave this running):
+    ```
+    bash run_cluster.sh vllm/vllm-openai:v0.10.0 \
+    10.32.15.23 \
+    --worker /opt/gpudata/models \
+    -e VLLM_HOST_IP=10.32.15.24 \
+    -e GLOO_SOCKET_IFNAME=ens4013np0 \
+    --ulimit nofile=1048576:1048576 \
+    -v /dev/shm:/dev/shm \
+    --privileged \
+    -e NCCL_IB_HCA=mlx5 \
+    -e NCCL_DEBUG=INFO \
+    -e NCCL_SOCKET_IFNAME=ens4013np0 \
+    -e NCCL_IB_GID_INDEX=3
+    ```
+* run the following on `nvl03` to start the `vllm` server (this starts a new shell in the head node container and starts vllm, leave this running):
+    ```
+    docker exec -it $(docker ps --format '{{.Names}}' | head -1) /bin/bash
+    # now inside container
+    ray status # should have 2 active nodes
+    vllm serve /models/meta-llama/<MODEL> -tp 8 # tensor-parallel 8 is most demanding of fast interconnect
+    ```
+* run the following on `nvl03` to run the benchmark (this starts yet another shell in the head node container and runs the benchmark):
+    ```
+    docker exec -it $(docker ps --format '{{.Names}}' | head -1) /bin/bash
+    # now inside container
+    vllm bench serve --backend openai --dataset-name random --model /models/meta-llama/<MODEL> --seed 42
+    ```
+* the primary metric we want to compare is median TPOT: time per output token
+
 # HPC GPU benchmarking
 
 Benchmarking 2x nodes each with 4x H200 NVL 141 GB. With and without ConnectX-7 400 Gbps NIC (w/ GPUDirect RDMA).
